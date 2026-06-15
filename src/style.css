@@ -1309,3 +1309,78 @@ button:active {
   50% { transform: scale(1.2); opacity: 1; }
   100% { transform: scale(1); opacity: 0.7; }
 }
+
+/* ==========================================================================
+   Help Guides, Tooltips and Selector Overlays
+   ========================================================================== */
+
+/* Action Tip Banner (Teaches basic rules) */
+.action-tip-banner {
+  position: absolute;
+  top: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: #fed7aa;
+  text-align: center;
+  pointer-events: none;
+  z-index: 9;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: fade-in-tip 1s ease;
+}
+
+@keyframes fade-in-tip {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* Action Helper Tooltip for active player cursor */
+.action-helper-tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(18, 12, 10, 0.95);
+  border: 1.5px solid var(--color-accent);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  z-index: 999;
+  transition: opacity 0.1s;
+}
+
+.action-helper-tooltip.hidden {
+  display: none !important;
+}
+
+/* Welcome Screen Room Selector styles */
+.room-selector-buttons .btn-selector {
+  border-radius: 8px;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.room-selector-buttons .btn-selector.active {
+  background: var(--color-accent) !important;
+  color: white !important;
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.3);
+}
+
+.room-selector-buttons .btn-selector:not(.active):hover {
+  background: rgba(255,255,255,0.08) !important;
+}
+
+.custom-room-field.hidden {
+  display: none !important;
+}
+

@@ -28,9 +28,14 @@
             <span class="room-status-indicator"></span>
             <span id="room-name-display" class="room-name">연결 중...</span>
           </div>
-          <button id="copy-room-link" class="btn-icon" title="방 링크 복사하기">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-          </button>
+          <div class="room-actions-wrapper" style="display: flex; gap: 4px;">
+            <button id="copy-room-link" class="btn-icon" title="방 링크 복사하기">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            </button>
+            <button id="change-room-btn" class="btn-icon" title="다른 방 가기/방 만들기">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+            </button>
+          </div>
         </div>
         
         <div class="visitor-profile-setup">
@@ -74,6 +79,11 @@
 
       <!-- MAIN STAGE: Fireplace Canvas & Interactive Grates -->
       <main id="fireplace-stage" class="fireplace-stage">
+        <!-- Action Tip Overlay Banner (Teaches how to play) -->
+        <div id="action-tip-banner" class="action-tip-banner">
+          💡 <strong>장작 던지기</strong>를 누르면 불길이 거세지고, <strong>마시멜로 굽기</strong>를 켜면 마우스로 마시멜로를 직접 구울 수 있습니다!
+        </div>
+
         <!-- Fireplace Backdrop Wood Cabin Wall -->
         <div class="cabin-background">
           <div class="window left-window">
@@ -110,6 +120,12 @@
       <!-- MULTIPLAYER CURSORS AND TEXT BURSTS CONTROLLER -->
       <div id="cursor-layer" class="cursor-layer"></div>
       <div id="worry-animation-layer" class="worry-animation-layer"></div>
+
+      <!-- Action Helper Tooltip attached to local user cursor -->
+      <div id="action-helper-tooltip" class="action-helper-tooltip hidden">
+        <span id="helper-tooltip-emoji">🍡</span>
+        <span id="helper-tooltip-text">불 근처로 마우스를 대면 구워집니다!</span>
+      </div>
 
       <!-- BOTTOM CONTROL DASHBOARD -->
       <footer class="hud-bottom glass-panel">
@@ -197,16 +213,28 @@
             <p>벽난로가 타오르는 아늑한 오두막에 오신 것을 환영합니다!</p>
             <p>여기는 다른 접속자들과 실시간으로 연결되는 공간입니다. 마우스를 움직여 서로의 불멍을 확인하고 함께 장작을 넣어 불을 밝혀보세요.</p>
             
-            <div class="consent-alert">
-              <p>🔔 <strong>사운드 재생 안내</strong><br>아늑한 빗소리, 장작 타는 소리, 재즈 음악을 온전히 감상하시려면 아래 시작 버튼을 클릭해 오디오 재생 권한을 허용해 주세요.</p>
-            </div>
-            
             <div class="name-entry-field">
               <label for="welcome-name">사용할 닉네임 입력:</label>
               <input type="text" id="welcome-name" placeholder="따뜻한 불멍객" maxlength="12" />
             </div>
+
+            <!-- Enhanced Room Selection HUD -->
+            <div class="room-entry-field" style="margin-top: 16px; text-align: left;">
+              <label>입장할 방 선택:</label>
+              <div class="room-selector-buttons" style="display: flex; gap: 8px; margin-top: 6px;">
+                <button type="button" id="lobby-select-btn" class="btn-selector active" style="flex: 1; padding: 10px; background: var(--color-accent); font-weight: 600; font-size: 0.85rem;">🌐 글로벌 로비 (Lobby)</button>
+                <button type="button" id="custom-select-btn" class="btn-selector" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.05); font-weight: 500; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.08);">🏠 개인 방 참가</button>
+              </div>
+              <div id="custom-room-field" class="custom-room-field hidden" style="margin-top: 8px;">
+                <input type="text" id="welcome-room-id" placeholder="방 이름을 입력하세요 (예: cozy-lodge)" maxlength="20" style="width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 10px 14px; color: var(--color-text-light); font-size: 0.95rem; outline: none;" />
+              </div>
+            </div>
+
+            <div class="consent-alert" style="margin-top: 16px;">
+              <p>🔔 <strong>사운드 재생 안내</strong><br>아늑한 빗소리, 장작 타는 소리, 재즈 음악을 감상하시려면 아래 시작 버튼을 클릭해 오디오 재생을 허용해 주세요.</p>
+            </div>
           </div>
-          <button id="start-app-btn" class="btn-start">오두막 들어가기 🔥</button>
+          <button id="start-app-btn" class="btn-start" style="margin-top: 10px;">오두막 들어가기 🔥</button>
         </div>
       </div>
     </div>
