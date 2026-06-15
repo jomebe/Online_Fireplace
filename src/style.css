@@ -490,7 +490,7 @@ button:active {
   align-items: flex-end;
   background-color: var(--color-bg-darkest);
   overflow: hidden;
-  padding-bottom: 120px;
+  padding-bottom: 220px;
 }
 
 .cabin-background {

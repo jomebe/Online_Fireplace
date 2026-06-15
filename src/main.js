@@ -117,8 +117,10 @@ function joinCozyRoom(roomId) {
     ]
   });
 
-  // Connect WebSocket Fallback
-  websocketProvider = new WebsocketProvider('wss://demos.yjs.dev', 'online-fireplace-' + roomId, ydoc);
+  // Connect WebSocket Fallback, sharing the exact same awareness object
+  websocketProvider = new WebsocketProvider('wss://demos.yjs.dev', 'online-fireplace-' + roomId, ydoc, {
+    awareness: webrtcProvider.awareness
+  });
   
   awareness = webrtcProvider.awareness;
 
@@ -730,8 +732,8 @@ window.addEventListener('keydown', (e) => {
 
 function triggerLocalReaction(emoji) {
   const states = awareness?.getLocalState();
-  const rawX = states ? (states.user.x / 100) * window.innerWidth : window.innerWidth / 2;
-  const rawY = states ? (states.user.y / 100) * window.innerHeight : window.innerHeight / 2;
+  const rawX = states?.user ? (states.user.x / 100) * window.innerWidth : window.innerWidth / 2;
+  const rawY = states?.user ? (states.user.y / 100) * window.innerHeight : window.innerHeight / 2;
   spawnFloatingReaction(emoji, rawX, rawY);
 }
 
