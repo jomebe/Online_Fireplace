@@ -1386,8 +1386,10 @@ button:active {
 }
 
 /* ==========================================================================
-   Ad Containers layout styles
+   Ad Containers layout styles (Strictly Non-Blocking Layout)
    ========================================================================== */
+
+/* 1. Desktop Top Banner: Centered at the top. Only shown on screens wide enough to prevent overlap with HUDs */
 .ad-top-container {
   position: absolute;
   top: 12px;
@@ -1401,6 +1403,7 @@ button:active {
   height: 90px;
 }
 
+/* 2. Side Skyscrapers: Pushed far left/right. Only visible on massive screens (>1700px) */
 .ad-left-container {
   position: absolute;
   left: 24px;
@@ -1425,6 +1428,7 @@ button:active {
   height: 300px;
 }
 
+/* 3. Chat Sidebar Ad: Nested inside, scrolls naturally. Never blocks screen UI */
 .ad-chat-container {
   width: 300px;
   height: 250px;
@@ -1442,57 +1446,65 @@ button:active {
   display: none; /* Hidden on desktop */
 }
 
+/* 4. Native Ads: Placed at the bottom left above the mixer, only on large screens */
 .ad-native-container {
   position: absolute;
-  bottom: 140px;
+  bottom: 150px;
   left: 24px;
   z-index: 9;
   max-width: 320px;
 }
 
-/* Responsive Ads adjustment */
-@media (max-width: 1400px) {
+/* ==========================================================================
+   Responsive Ad Rules (Prevent overlaps)
+   ========================================================================== */
+
+/* Hide side skyscraper ads on screens under 1700px wide (avoids fireplace/HUD overlap) */
+@media (max-width: 1700px) {
   .ad-left-container,
   .ad-right-container {
-    display: none !important; /* Hide side skyscrapers on narrower screens */
+    display: none !important;
   }
 }
 
-@media (max-width: 900px) {
-  .ad-top-container {
-    display: none !important; /* Hide 728x90 on mobile */
+/* Hide top banner and native sidebar ads on screens under 1400px wide (avoids HUD overlaps) */
+@media (max-width: 1400px) {
+  .ad-top-container,
+  .ad-native-container {
+    display: none !important;
   }
+}
+
+/* Mobile Portrait Ads placement */
+@media (max-width: 900px) {
+  /* Hide all desktop ads */
+  .ad-top-container,
+  .ad-left-container,
+  .ad-right-container,
+  .ad-native-container,
+  .ad-mobile-bottom-container {
+    display: none !important; /* Hide mobile bottom ad so it never blocks the fireplace/controls */
+  }
+
+  /* Keep only the mobile top banner, placed safely at the very top of the screen */
   .ad-mobile-top-container {
     display: flex;
     justify-content: center;
     align-items: center;
     position: absolute;
-    top: 80px;
+    top: 8px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 9;
     width: 468px;
     height: 60px;
   }
-  .ad-mobile-bottom-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    bottom: 250px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 9;
-    width: 320px;
-    height: 50px;
-  }
-  .ad-native-container {
-    position: static;
-    margin: 12px auto;
-    max-width: 100%;
-    display: flex;
-    justify-content: center;
+  
+  /* Push tip banner down slightly to make room for mobile top ad */
+  .action-tip-banner {
+    top: 145px !important;
   }
 }
+
 
 
