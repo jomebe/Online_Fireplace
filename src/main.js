@@ -489,28 +489,50 @@ setInterval(() => {
   updateLocalAwareness();
 }, 200);
 
-// Eat / Extinguish marshmallow click
-window.addEventListener('mousedown', (e) => {
+// Eat / Extinguish marshmallow action
+let lastTouchTime = 0;
+
+function handleMarshmallowAction(clientX, clientY, target) {
   if (currentTool !== 'marshmallow') return;
   // Ignore clicks on HUD buttons
-  if (e.target.closest('button') || e.target.closest('input') || e.target.closest('textarea')) return;
+  if (
+    target.closest('button') || 
+    target.closest('input') || 
+    target.closest('textarea') ||
+    target.closest('.hud-top-left') ||
+    target.closest('.hud-bottom') ||
+    target.closest('.chat-sidebar')
+  ) return;
 
   if (marshmallowState === 'fire') {
     // Put out fire
     marshmallowState = 'burnt';
     marshmallowRoastLevel = 100;
     audio.triggerSFX('crackle-pop');
-    spawnFloatingText('💨 후~ 불어서 끔!', e.clientX, e.clientY);
+    spawnFloatingText('💨 후~ 불어서 끔!', clientX, clientY);
   } else if (marshmallowState === 'toasted' || marshmallowState === 'burnt') {
     // Eat it
     audio.triggerSFX('crackle-pop');
-    spawnFloatingMunch(e.clientX, e.clientY, marshmallowState === 'toasted' ? '😋 냠냠 바삭!' : '💀 아우 탄맛..');
+    spawnFloatingMunch(clientX, clientY, marshmallowState === 'toasted' ? '😋 냠냠 바삭!' : '💀 아우 탄맛..');
     
     marshmallowState = 'raw';
     marshmallowRoastLevel = 0;
   }
   updateTooltipContent();
   updateLocalAwareness();
+}
+
+window.addEventListener('touchstart', (e) => {
+  if (e.touches && e.touches.length > 0) {
+    lastTouchTime = Date.now();
+    handleMarshmallowAction(e.touches[0].clientX, e.touches[0].clientY, e.target);
+  }
+});
+
+window.addEventListener('mousedown', (e) => {
+  // Prevent double action on touch devices
+  if (Date.now() - lastTouchTime < 500) return;
+  handleMarshmallowAction(e.clientX, e.clientY, e.target);
 });
 
 function spawnFloatingMunch(x, y, text) {
@@ -523,25 +545,25 @@ function spawnFloatingMunch(x, y, text) {
   setTimeout(() => el.remove(), 1800);
 }
 
-// Mouse positioning & dynamic helper tooltip follow
-window.addEventListener('mousemove', (e) => {
+// Shared pointer movement handler
+function handlePointerMove(clientX, clientY) {
   if (!awareness) return;
 
-  const xPercent = (e.clientX / window.innerWidth) * 100;
-  const yPercent = (e.clientY / window.innerHeight) * 100;
+  const xPercent = (clientX / window.innerWidth) * 100;
+  const yPercent = (clientY / window.innerHeight) * 100;
 
   if (currentTool === 'marshmallow') {
     const fRect = fireCanvas.getBoundingClientRect();
     isRoastingNearFire = (
-      e.clientX >= fRect.left &&
-      e.clientX <= fRect.right &&
-      e.clientY >= fRect.top &&
-      e.clientY <= fRect.bottom
+      clientX >= fRect.left &&
+      clientX <= fRect.right &&
+      clientY >= fRect.top &&
+      clientY <= fRect.bottom
     );
     
     // Position helper tooltip next to pointer
-    actionHelperTooltip.style.left = `${e.clientX + 16}px`;
-    actionHelperTooltip.style.top = `${e.clientY + 16}px`;
+    actionHelperTooltip.style.left = `${clientX + 16}px`;
+    actionHelperTooltip.style.top = `${clientY + 16}px`;
     updateTooltipContent();
   } else {
     isRoastingNearFire = false;
@@ -556,6 +578,28 @@ window.addEventListener('mousemove', (e) => {
     x: xPercent,
     y: yPercent
   });
+}
+
+// Mouse positioning & dynamic helper tooltip follow
+window.addEventListener('mousemove', (e) => {
+  handlePointerMove(e.clientX, e.clientY);
+});
+
+// Touch support for marshmallow roasting & movements
+window.addEventListener('touchmove', (e) => {
+  if (e.touches && e.touches.length > 0) {
+    // If roasting marshmallow, prevent default scrolling/bouncing behavior so they can drag easily
+    if (currentTool === 'marshmallow') {
+      e.preventDefault();
+    }
+    handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+  }
+}, { passive: false });
+
+window.addEventListener('touchstart', (e) => {
+  if (e.touches && e.touches.length > 0) {
+    handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+  }
 });
 
 // Worry Modal
@@ -781,8 +825,11 @@ const toggleChatBtn = document.getElementById('toggle-chat-btn');
 const chatBadge = document.getElementById('chat-badge');
 
 toggleChatBtn.addEventListener('click', () => {
+  const isCurrentlyCollapsed = chatSidebar.classList.contains('collapsed');
   chatSidebar.classList.toggle('collapsed');
-  if (!chatSidebar.classList.contains('collapsed')) {
+  if (isCurrentlyCollapsed) {
+    // We are expanding the chat sidebar, collapse all other panels!
+    collapseAllMobilePanels('chat');
     chatBadge.classList.add('hidden');
     chatBadge.innerText = '0';
     chatInput.focus();
@@ -872,3 +919,55 @@ volFire.addEventListener('input', (e) => audio.setVolume('fire', e.target.value 
 volRain.addEventListener('input', (e) => audio.setVolume('rain', e.target.value / 100));
 volWind.addEventListener('input', (e) => audio.setVolume('wind', e.target.value / 100));
 volMusic.addEventListener('input', (e) => audio.setVolume('music', e.target.value / 100));
+
+// Mobile Responsive Drawer Toggles & Smooth Panel Auto-Collapsing
+const toggleVisitorsBtn = document.getElementById('toggle-visitors-btn');
+const toggleMixerBtn = document.getElementById('toggle-mixer-btn');
+const toggleSoundboardBtn = document.getElementById('toggle-soundboard-btn');
+const hudTopLeft = document.querySelector('.hud-top-left');
+const hudLeftMixer = document.getElementById('hud-left-mixer');
+const hudRightSoundboard = document.getElementById('hud-right-soundboard');
+
+function collapseAllMobilePanels(except) {
+  if (except !== 'visitors') hudTopLeft.classList.remove('expanded');
+  if (except !== 'mixer') hudLeftMixer.classList.remove('expanded');
+  if (except !== 'soundboard') hudRightSoundboard.classList.remove('expanded');
+  if (except !== 'chat') chatSidebar.classList.add('collapsed');
+}
+
+toggleVisitorsBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const isExpanded = hudTopLeft.classList.contains('expanded');
+  collapseAllMobilePanels(isExpanded ? null : 'visitors');
+  hudTopLeft.classList.toggle('expanded');
+});
+
+toggleMixerBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const isExpanded = hudLeftMixer.classList.contains('expanded');
+  collapseAllMobilePanels(isExpanded ? null : 'mixer');
+  hudLeftMixer.classList.toggle('expanded');
+});
+
+toggleSoundboardBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const isExpanded = hudRightSoundboard.classList.contains('expanded');
+  collapseAllMobilePanels(isExpanded ? null : 'soundboard');
+  hudRightSoundboard.classList.toggle('expanded');
+});
+
+// Click outside panels to collapse them on mobile viewports
+window.addEventListener('click', (e) => {
+  if (window.innerWidth <= 900) {
+    if (
+      !e.target.closest('.hud-top-left') && 
+      !e.target.closest('.hud-left-mixer') && 
+      !e.target.closest('.hud-right-soundboard') && 
+      !e.target.closest('.chat-sidebar') && 
+      !e.target.closest('.toggle-chat-btn') &&
+      !e.target.closest('.modal')
+    ) {
+      collapseAllMobilePanels();
+    }
+  }
+});

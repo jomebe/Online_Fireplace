@@ -1049,7 +1049,8 @@ button:active {
 }
 
 .modal-content {
-  width: 480px;
+  width: 90%;
+  max-width: 480px;
   padding: 32px;
   text-align: center;
   animation: modal-pop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1114,7 +1115,8 @@ button:active {
 
 /* Welcome Card Particulars */
 .welcome-card {
-  width: 520px;
+  width: 90%;
+  max-width: 520px;
   padding: 40px;
 }
 
@@ -1257,51 +1259,293 @@ button:active {
 /* ==========================================================================
    Responsive Adaptation
    ========================================================================== */
+.mobile-only {
+  display: none !important;
+}
+
 @media (max-width: 900px) {
+  .mobile-only {
+    display: inline-flex !important;
+  }
+  
   .window {
     display: none; /* Hide windows on smaller screens */
   }
   
+  /* Compact Fireplace Hearth scale for mobile displays */
   .fireplace-brickwork {
-    width: 90%;
-    height: 380px;
+    width: 96%;
+    height: 330px;
+    padding: 0 16px;
   }
   
+  .fireplace-hearth {
+    height: 250px;
+  }
+
+  .fireplace-stage {
+    padding-bottom: 90px; /* Reduce stage spacing */
+  }
+
+  .cabin-background {
+    padding-bottom: 80px; /* Lift fireplace just above the compact footer */
+  }
+  
+  /* Compact footer HUD */
   .hud-bottom {
-    flex-direction: column;
-    height: auto;
-    gap: 16px;
-    padding: 16px;
-    bottom: 12px;
-    left: 12px;
-    right: 12px;
+    flex-direction: row !important;
+    height: 60px;
+    padding: 0 12px;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    gap: 0;
+    justify-content: space-between;
+    border-radius: 12px;
   }
   
+  /* Audio Mixer drawer overlay */
   .hud-left-mixer {
-    width: 100%;
+    width: auto;
+    position: relative;
+    gap: 8px;
   }
   
+  .mixer-sliders {
+    display: none;
+    position: absolute;
+    bottom: 64px;
+    left: -4px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 12px;
+    width: 180px;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 99;
+  }
+  
+  .hud-left-mixer.expanded .mixer-sliders {
+    display: grid !important;
+  }
+
+  /* Soundboard drawer overlay */
   .hud-right-soundboard {
-    width: 100%;
-    align-items: center;
+    width: auto;
+    position: relative;
+    align-items: flex-end;
   }
   
+  .soundboard-label {
+    display: none; /* Hide text label on mobile */
+  }
+
+  .soundboard-buttons {
+    display: none;
+    position: absolute;
+    bottom: 64px;
+    right: -4px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 10px;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 99;
+  }
+
+  .hud-right-soundboard.expanded .soundboard-buttons {
+    display: flex !important;
+  }
+  
+  /* Compact visitors list */
+  .hud-top-left {
+    top: 12px;
+    left: 12px;
+    width: 240px;
+    padding: 8px 12px;
+    border-radius: 12px;
+  }
+
+  .room-header {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .visitors-mobile-collapsible {
+    display: none;
+    margin-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 10px;
+  }
+
+  .hud-top-left.expanded {
+    width: 280px;
+  }
+
+  .hud-top-left.expanded .room-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  }
+
+  .hud-top-left.expanded .visitors-mobile-collapsible {
+    display: block !important;
+  }
+
+  /* Slide-up Chat sidebar sheet */
   .chat-sidebar {
     top: auto;
-    bottom: 240px;
-    right: 12px;
-    height: 300px;
-    width: calc(100% - 24px);
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100vw;
+    height: 60vh;
+    border-radius: 20px 20px 0 0;
+    border: 1px solid var(--glass-border);
+    border-bottom: none;
+    transform: translateY(100%);
+    z-index: 999;
   }
   
   .chat-sidebar.collapsed {
-    transform: translateY(330px);
+    transform: translateY(100%) !important;
+  }
+  
+  .chat-sidebar:not(.collapsed) {
+    transform: translateY(0) !important;
   }
   
   .toggle-chat-btn {
     left: auto;
-    right: 12px;
+    right: 16px;
     top: -56px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Compact action buttons */
+  .hud-center-actions {
+    gap: 8px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .btn-action {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    gap: 4px;
+    border-radius: 10px;
+  }
+
+  .btn-emoji {
+    font-size: 1.0rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .welcome-card {
+    padding: 24px 16px;
+  }
+
+  .welcome-card h2 {
+    font-size: 1.25rem;
+  }
+
+  .consent-alert {
+    margin: 12px 0;
+    padding: 8px 12px;
+  }
+
+  .room-selector-buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .room-selector-buttons .btn-selector {
+    font-size: 0.8rem;
+  }
+
+  /* Footer layout optimized for narrow portrait viewports */
+  .hud-bottom {
+    height: 60px;
+    padding: 0 8px;
+    justify-content: center;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+  }
+
+  .hud-center-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 4px;
+    margin: 0;
+  }
+
+  .btn-action {
+    flex: 1;
+    font-size: 0.72rem;
+    padding: 10px 2px;
+    gap: 2px;
+  }
+
+  .btn-emoji {
+    font-size: 0.85rem;
+  }
+
+  /* Float Mixer and Soundboard above footer elements */
+  .hud-left-mixer {
+    position: absolute;
+    bottom: 84px;
+    left: 12px;
+    width: auto;
+    z-index: 99;
+  }
+
+  .hud-left-mixer.expanded .mixer-sliders {
+    bottom: 56px;
+    left: 0;
+  }
+
+  .hud-right-soundboard {
+    position: absolute;
+    bottom: 84px;
+    right: 72px; /* Float next to the chat toggle button */
+    width: auto;
+    z-index: 99;
+  }
+
+  .hud-right-soundboard.expanded .soundboard-buttons {
+    bottom: 56px;
+    right: 0;
+  }
+
+  /* Slide-up chat panel configurations */
+  .chat-sidebar {
+    height: 60vh;
+  }
+
+  .toggle-chat-btn {
+    top: -84px !important; /* Vertically align chat toggle button with floating controls */
+  }
+
+  .hud-top-left {
+    width: calc(100% - 24px);
+  }
+  
+  .hud-top-left.expanded {
+    width: calc(100% - 24px);
   }
 }
 
@@ -1483,7 +1727,7 @@ button:active {
   .ad-right-container,
   .ad-native-container,
   .ad-mobile-bottom-container {
-    display: none !important; /* Hide mobile bottom ad so it never blocks the fireplace/controls */
+    display: none !important;
   }
 
   /* Keep only the mobile top banner, placed safely at the very top of the screen */
@@ -1503,6 +1747,31 @@ button:active {
   /* Push tip banner down slightly to make room for mobile top ad */
   .action-tip-banner {
     top: 145px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Hide 468px banner on very narrow viewports to prevent horizontal overflow */
+  .ad-mobile-top-container {
+    display: none !important;
+  }
+  
+  /* Safe 320x50 mobile banner placed at the top */
+  .ad-mobile-bottom-container {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9;
+    width: 320px;
+    height: 50px;
+  }
+
+  .action-tip-banner {
+    top: 135px !important;
   }
 }
 

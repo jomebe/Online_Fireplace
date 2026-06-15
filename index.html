@@ -120,28 +120,32 @@
             <span class="room-status-indicator"></span>
             <span id="room-name-display" class="room-name">연결 중...</span>
           </div>
-          <div class="room-actions-wrapper" style="display: flex; gap: 4px;">
+          <div class="room-actions-wrapper" style="display: flex; gap: 4px; align-items: center;">
             <button id="copy-room-link" class="btn-icon" title="방 링크 복사하기">
               <svg class="icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
             </button>
             <button id="change-room-btn" class="btn-icon" title="다른 방 가기/방 만들기">
               <svg class="icon" viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
             </button>
+            <!-- Toggle lists on mobile -->
+            <button id="toggle-visitors-btn" class="btn-icon mobile-only" title="접속자 목록 보기">👥</button>
           </div>
         </div>
         
-        <div class="visitor-profile-setup">
-          <input type="text" id="nickname-input" placeholder="닉네임" maxlength="12" />
-          <div class="color-picker-wrapper">
-            <input type="color" id="user-color-picker" value="#ff8833" title="커서 색상 변경" />
+        <!-- Collapsible settings wrapper on mobile -->
+        <div class="visitors-mobile-collapsible" id="visitors-mobile-collapsible">
+          <div class="visitor-profile-setup">
+            <input type="text" id="nickname-input" placeholder="닉네임" maxlength="12" />
+            <div class="color-picker-wrapper">
+              <input type="color" id="user-color-picker" value="#ff8833" title="커서 색상 변경" />
+            </div>
           </div>
-        </div>
 
-        <div class="visitors-list-container">
-          <div class="visitors-header">
-            <span>접속 중인 친구들 (<span id="visitor-count">0</span>명)</span>
-          </div>
-          <div id="visitors-list" class="visitors-list">
+          <div class="visitors-list-container">
+            <div class="visitors-header">
+              <span>접속 중인 친구들 (<span id="visitor-count">0</span>명)</span>
+            </div>
+            <div id="visitors-list" class="visitors-list">
             <!-- Dynamic visitors list -->
           </div>
         </div>
@@ -236,10 +240,11 @@
 
       <!-- BOTTOM CONTROL DASHBOARD -->
       <footer class="hud-bottom glass-panel">
-        <div class="hud-left-mixer">
+        <div class="hud-left-mixer" id="hud-left-mixer">
           <button id="global-mute-btn" class="btn-mute" title="음소거">
             <svg id="mute-icon" class="icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
           </button>
+          <button id="toggle-mixer-btn" class="btn-mute mobile-only" title="볼륨 상세 조절">🎛️</button>
           <div class="mixer-sliders">
             <div class="slider-group">
               <label for="volume-fire">🔥 타닥타닥</label>
@@ -274,8 +279,9 @@
           </button>
         </div>
 
-        <div class="hud-right-soundboard">
+        <div class="hud-right-soundboard" id="hud-right-soundboard">
           <span class="soundboard-label">협동 소리판:</span>
+          <button id="toggle-soundboard-btn" class="btn-sfx mobile-only" title="소리판 열기">🎸</button>
           <div class="soundboard-buttons">
             <button class="btn-sfx" data-sfx="guitar" title="기타 코드 연주">🎸</button>
             <button class="btn-sfx" data-sfx="chime" title="바람종 소리">🔔</button>
