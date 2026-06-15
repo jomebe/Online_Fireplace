@@ -503,6 +503,7 @@ button:active {
   display: flex;
   justify-content: center;
   align-items: flex-end;
+  padding-bottom: 180px;
 }
 
 /* Cabin Windows */
