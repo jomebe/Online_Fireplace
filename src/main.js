@@ -461,9 +461,9 @@ setInterval(() => {
         marshmallowState = 'fire';
         audio.triggerSFX('crackle-pop');
       }
-    } else if (marshmallowRoastLevel >= 90) {
+    } else if (marshmallowRoastLevel >= 100) {
       marshmallowState = 'burnt';
-    } else if (marshmallowRoastLevel >= 40) {
+    } else if (marshmallowRoastLevel >= 70) {
       marshmallowState = 'toasted';
     } else {
       marshmallowState = 'raw';
@@ -483,7 +483,7 @@ window.addEventListener('mousedown', (e) => {
   if (marshmallowState === 'fire') {
     // Put out fire
     marshmallowState = 'burnt';
-    marshmallowRoastLevel = 90;
+    marshmallowRoastLevel = 100;
     audio.triggerSFX('crackle-pop');
     spawnFloatingText('💨 후~ 불어서 끔!', e.clientX, e.clientY);
   } else if (marshmallowState === 'toasted' || marshmallowState === 'burnt') {
