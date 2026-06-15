@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cozy Multiplayer Fireplace | 실시간 온라인 벽난로</title>
+    <meta name="description" content="친구들과 함께 따뜻한 장작 불멍을 즐겨보세요. 실시간으로 나무를 넣고, 마시멜로를 굽고, 고민거리를 태우며 이야기를 나눌 수 있는 온라인 멀티플레이 벽난로입니다." />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Ambient Flickering Glow Overlay -->
+    <div id="ambient-glow" class="ambient-glow"></div>
+    <div id="ambient-glow-sparks" class="ambient-glow sparks"></div>
+
+    <div id="app-container">
+      <!-- Hidden H1 for SEO -->
+      <h1 class="sr-only">실시간 멀티플레이 Cozy 온라인 벽난로</h1>
+
+      <!-- TOP HUD: Room info & Visitors -->
+      <header class="hud-top-left glass-panel">
+        <div class="room-header">
+          <div class="room-title-area">
+            <span class="room-status-indicator"></span>
+            <span id="room-name-display" class="room-name">연결 중...</span>
+          </div>
+          <button id="copy-room-link" class="btn-icon" title="방 링크 복사하기">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+          </button>
+        </div>
+        
+        <div class="visitor-profile-setup">
+          <input type="text" id="nickname-input" placeholder="닉네임" maxlength="12" />
+          <div class="color-picker-wrapper">
+            <input type="color" id="user-color-picker" value="#ff8833" title="커서 색상 변경" />
+          </div>
+        </div>
+
+        <div class="visitors-list-container">
+          <div class="visitors-header">
+            <span>접속 중인 친구들 (<span id="visitor-count">0</span>명)</span>
+          </div>
+          <div id="visitors-list" class="visitors-list">
+            <!-- Dynamic visitors list -->
+          </div>
+        </div>
+      </header>
+
+      <!-- SIDEBAR: Cozy Chat -->
+      <aside id="chat-sidebar" class="chat-sidebar glass-panel collapsed">
+        <button id="toggle-chat-btn" class="toggle-chat-btn">
+          <span class="chat-count-badge hidden" id="chat-badge">0</span>
+          <svg class="icon-chat" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+        </button>
+        <div class="chat-content">
+          <div class="chat-messages-header">
+            <h3>따뜻한 대화방</h3>
+          </div>
+          <div id="chat-messages" class="chat-messages">
+            <!-- Dynamic Chat Messages -->
+          </div>
+          <form id="chat-form" class="chat-form">
+            <input type="text" id="chat-input" placeholder="이야기를 나눠보세요..." maxlength="100" autocomplete="off" />
+            <button type="submit" class="btn-send">
+              <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <!-- MAIN STAGE: Fireplace Canvas & Interactive Grates -->
+      <main id="fireplace-stage" class="fireplace-stage">
+        <!-- Fireplace Backdrop Wood Cabin Wall -->
+        <div class="cabin-background">
+          <div class="window left-window">
+            <div class="window-pane">
+              <div class="weather-rain"></div>
+            </div>
+          </div>
+          <div class="window right-window">
+            <div class="window-pane">
+              <div class="weather-rain"></div>
+            </div>
+          </div>
+          
+          <!-- Fireplace Mantle and Stonework -->
+          <div class="fireplace-brickwork">
+            <div class="fireplace-mantel">
+              <div class="mantel-item clock"></div>
+              <div class="mantel-item candle flickering"></div>
+              <div class="mantel-item plant"></div>
+              <div class="mantel-item frame"></div>
+            </div>
+            <div class="fireplace-hearth">
+              <!-- Renders fireplace depth, dark backing -->
+              <div class="fireplace-inner-cave"></div>
+              <!-- CANVAS FOR REALTIME FIRE -->
+              <canvas id="fire-canvas"></canvas>
+              <!-- Sparkles overlay -->
+              <div class="grate-bars"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- MULTIPLAYER CURSORS AND TEXT BURSTS CONTROLLER -->
+      <div id="cursor-layer" class="cursor-layer"></div>
+      <div id="worry-animation-layer" class="worry-animation-layer"></div>
+
+      <!-- BOTTOM CONTROL DASHBOARD -->
+      <footer class="hud-bottom glass-panel">
+        <div class="hud-left-mixer">
+          <button id="global-mute-btn" class="btn-mute" title="음소거">
+            <svg id="mute-icon" class="icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+          </button>
+          <div class="mixer-sliders">
+            <div class="slider-group">
+              <label for="volume-fire">🔥 타닥타닥</label>
+              <input type="range" id="volume-fire" min="0" max="100" value="50" />
+            </div>
+            <div class="slider-group">
+              <label for="volume-rain">🌧️ 빗소리</label>
+              <input type="range" id="volume-rain" min="0" max="100" value="20" />
+            </div>
+            <div class="slider-group">
+              <label for="volume-wind">💨 바람소리</label>
+              <input type="range" id="volume-wind" min="0" max="100" value="10" />
+            </div>
+            <div class="slider-group">
+              <label for="volume-music">🎵 재즈음악</label>
+              <input type="range" id="volume-music" min="0" max="100" value="30" />
+            </div>
+          </div>
+        </div>
+
+        <div class="hud-center-actions">
+          <button id="add-log-btn" class="btn-action primary-btn">
+            <span class="btn-emoji">🪵</span> 장작 던지기
+          </button>
+          
+          <button id="roast-marshmallow-btn" class="btn-action">
+            <span class="btn-emoji">🍡</span> 마시멜로 굽기
+          </button>
+
+          <button id="burn-worry-btn" class="btn-action">
+            <span class="btn-emoji">✉️</span> 고민 불태우기
+          </button>
+        </div>
+
+        <div class="hud-right-soundboard">
+          <span class="soundboard-label">협동 소리판:</span>
+          <div class="soundboard-buttons">
+            <button class="btn-sfx" data-sfx="guitar" title="기타 코드 연주">🎸</button>
+            <button class="btn-sfx" data-sfx="chime" title="바람종 소리">🔔</button>
+            <button class="btn-sfx" data-sfx="owl" title="올빼미 울음소리">🦉</button>
+            <button class="btn-sfx" data-sfx="crackle-pop" title="불꽃 펑 터지는 소리">💥</button>
+          </div>
+        </div>
+      </footer>
+
+      <!-- Floating Emoji Reactions Panel (Activated on Shift or clicking hover) -->
+      <div id="emoji-quick-reactions" class="emoji-quick-reactions">
+        <button class="btn-reaction-trigger" data-emoji="🔥">🔥</button>
+        <button class="btn-reaction-trigger" data-emoji="🪵">🪵</button>
+        <button class="btn-reaction-trigger" data-emoji="❤️">❤️</button>
+        <button class="btn-reaction-trigger" data-emoji="☕">☕</button>
+        <button class="btn-reaction-trigger" data-emoji="✨">✨</button>
+        <button class="btn-reaction-trigger" data-emoji="💤">💤</button>
+      </div>
+
+      <!-- MODAL: Worry Input -->
+      <div id="worry-modal" class="modal hidden">
+        <div class="modal-content glass-panel">
+          <h2>타오르는 불꽃 속에 당신의 걱정을 태워보세요</h2>
+          <p>걱정이나 나쁜 기억을 적어 불길에 던지면 흔적도 없이 사라집니다.<br>(작성된 고민은 그 어디에도 저장되지 않고 즉시 소멸합니다)</p>
+          <textarea id="worry-text" placeholder="여기에 걱정거리를 적으세요..." maxlength="200"></textarea>
+          <div class="modal-actions">
+            <button id="close-worry-modal" class="btn-secondary">닫기</button>
+            <button id="submit-worry-btn" class="btn-action primary-btn">불속으로 던지기 🔥</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- MODAL: Welcome Screen & Audio Consent -->
+      <div id="welcome-modal" class="modal">
+        <div class="modal-content welcome-card glass-panel">
+          <div class="welcome-header">
+            <span class="title-emoji">🔥</span>
+            <h2>Cozy Multiplayer Fireplace</h2>
+            <p class="subtitle">실시간 온라인 멀티플레이 벽난로</p>
+          </div>
+          <div class="welcome-body">
+            <p>벽난로가 타오르는 아늑한 오두막에 오신 것을 환영합니다!</p>
+            <p>여기는 다른 접속자들과 실시간으로 연결되는 공간입니다. 마우스를 움직여 서로의 불멍을 확인하고 함께 장작을 넣어 불을 밝혀보세요.</p>
+            
+            <div class="consent-alert">
+              <p>🔔 <strong>사운드 재생 안내</strong><br>아늑한 빗소리, 장작 타는 소리, 재즈 음악을 온전히 감상하시려면 아래 시작 버튼을 클릭해 오디오 재생 권한을 허용해 주세요.</p>
+            </div>
+            
+            <div class="name-entry-field">
+              <label for="welcome-name">사용할 닉네임 입력:</label>
+              <input type="text" id="welcome-name" placeholder="따뜻한 불멍객" maxlength="12" />
+            </div>
+          </div>
+          <button id="start-app-btn" class="btn-start">오두막 들어가기 🔥</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN MODULE -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
