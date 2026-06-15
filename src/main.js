@@ -430,18 +430,33 @@ function updateTooltipContent() {
   let emoji = '🍡';
   let text = '불 근처로 마우스를 대면 마시멜로가 구워집니다!';
 
-  if (marshmallowState === 'toasted') {
-    emoji = '😋';
-    text = '노릇노릇하게 구워졌습니다! 클릭하여 드세요!';
-  } else if (marshmallowState === 'burnt') {
-    emoji = '💀';
-    text = '탄 마시멜로입니다! 클릭하여 새것으로 교체하세요.';
-  } else if (marshmallowState === 'fire') {
+  const pct = Math.round(marshmallowRoastLevel);
+
+  if (marshmallowState === 'fire') {
     emoji = '🔥';
-    text = '불이 붙었습니다! 얼른 클릭해서 끄세요!';
+    text = `🔥 불이 붙었습니다! (${pct}%) 클릭해서 불을 끄세요!`;
   } else if (isRoastingNearFire) {
-    emoji = '🔥';
-    text = `마시멜로 굽는 중... (${Math.round(marshmallowRoastLevel)}%)`;
+    if (marshmallowState === 'toasted') {
+      emoji = '😋';
+      text = `😋 노릇노릇 잘 구워짐! (${pct}%) 클릭해서 먹기`;
+    } else if (marshmallowState === 'burnt') {
+      emoji = '💀';
+      text = `💀 타버렸습니다! (${pct}%) 클릭해서 새것으로 교체`;
+    } else {
+      emoji = '🔥';
+      text = `🔥 마시멜로 굽는 중... (${pct}%)`;
+    }
+  } else {
+    if (marshmallowState === 'toasted') {
+      emoji = '😋';
+      text = '😋 노릇노릇 잘 구워졌습니다! 클릭해서 먹기';
+    } else if (marshmallowState === 'burnt') {
+      emoji = '💀';
+      text = '💀 탄 마시멜로입니다. 클릭해서 교체';
+    } else if (marshmallowState === 'fire') {
+      emoji = '🔥';
+      text = '🔥 마시멜로에 불이 붙었습니다! 클릭해서 끄세요!';
+    }
   }
 
   helperTooltipEmoji.innerText = emoji;
