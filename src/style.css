@@ -1385,3 +1385,114 @@ button:active {
   display: none !important;
 }
 
+/* ==========================================================================
+   Ad Containers layout styles
+   ========================================================================== */
+.ad-top-container {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 728px;
+  height: 90px;
+}
+
+.ad-left-container {
+  position: absolute;
+  left: 24px;
+  top: 250px;
+  z-index: 9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 160px;
+  height: 600px;
+}
+
+.ad-right-container {
+  position: absolute;
+  right: 24px;
+  top: 400px;
+  z-index: 9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 160px;
+  height: 300px;
+}
+
+.ad-chat-container {
+  width: 300px;
+  height: 250px;
+  margin: 12px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+.ad-mobile-top-container,
+.ad-mobile-bottom-container {
+  display: none; /* Hidden on desktop */
+}
+
+.ad-native-container {
+  position: absolute;
+  bottom: 140px;
+  left: 24px;
+  z-index: 9;
+  max-width: 320px;
+}
+
+/* Responsive Ads adjustment */
+@media (max-width: 1400px) {
+  .ad-left-container,
+  .ad-right-container {
+    display: none !important; /* Hide side skyscrapers on narrower screens */
+  }
+}
+
+@media (max-width: 900px) {
+  .ad-top-container {
+    display: none !important; /* Hide 728x90 on mobile */
+  }
+  .ad-mobile-top-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9;
+    width: 468px;
+    height: 60px;
+  }
+  .ad-mobile-bottom-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 250px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9;
+    width: 320px;
+    height: 50px;
+  }
+  .ad-native-container {
+    position: static;
+    margin: 12px auto;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+
