@@ -778,6 +778,11 @@ document.querySelectorAll('.btn-reaction-trigger').forEach(btn => {
 });
 
 window.addEventListener('keydown', (e) => {
+  if (e.key.toLowerCase() === 'h') {
+    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+    toggleUIVisibility();
+    return;
+  }
   const keys = { '1': '🔥', '2': '🪵', '3': '❤️', '4': '☕', '5': '✨', '6': '💤' };
   const emoji = keys[e.key];
   if (emoji) {
@@ -971,3 +976,69 @@ window.addEventListener('click', (e) => {
     }
   }
 });
+
+// Zen Mode / Hide UI Toggle logic
+const hideUiBtn = document.getElementById('hide-ui-btn');
+let isUIHidden = false;
+
+function toggleUIVisibility(forceState) {
+  isUIHidden = forceState !== undefined ? forceState : !isUIHidden;
+  const appContainer = document.getElementById('app-container');
+  const adContainers = document.querySelectorAll('.ad-top-container, .ad-left-container, .ad-right-container, .ad-mobile-top-container, .ad-mobile-bottom-container');
+  
+  if (isUIHidden) {
+    appContainer.classList.add('ui-hidden');
+    adContainers.forEach(el => el.classList.add('ui-hidden'));
+    spawnZenModeToast();
+  } else {
+    appContainer.classList.remove('ui-hidden');
+    adContainers.forEach(el => el.classList.remove('ui-hidden'));
+    
+    const toast = document.getElementById('zen-toast');
+    if (toast) toast.remove();
+  }
+}
+
+function spawnZenModeToast() {
+  let toast = document.getElementById('zen-toast');
+  if (toast) toast.remove();
+  
+  toast = document.createElement('div');
+  toast.id = 'zen-toast';
+  toast.className = 'zen-toast';
+  toast.innerText = '화면을 클릭하거나 H 키를 누르면 UI가 다시 나타납니다.';
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    if (toast.parentElement) {
+      toast.style.opacity = '0';
+      setTimeout(() => {
+        if (toast.parentElement) toast.remove();
+      }, 800);
+    }
+  }, 3000);
+}
+
+if (hideUiBtn) {
+  hideUiBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleUIVisibility(true);
+  });
+}
+
+// Global capturing phase listeners to restore UI on tap/click anywhere
+window.addEventListener('touchstart', (e) => {
+  if (isUIHidden) {
+    toggleUIVisibility(false);
+    e.stopPropagation();
+    e.preventDefault();
+  }
+}, true);
+
+window.addEventListener('mousedown', (e) => {
+  if (isUIHidden) {
+    toggleUIVisibility(false);
+    e.stopPropagation();
+    e.preventDefault();
+  }
+}, true);

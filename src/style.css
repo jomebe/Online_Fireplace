@@ -1775,5 +1775,73 @@ button:active {
   }
 }
 
+/* ==========================================================================
+   Zen Mode (Hide UI) Styles
+   ========================================================================== */
 
+/* Add smooth fade transitions to HUD elements for Zen Mode */
+.hud-top-left,
+.chat-sidebar,
+.hud-bottom,
+.emoji-quick-reactions,
+.action-tip-banner,
+.cursor-layer,
+.action-helper-tooltip {
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s, right 0.3s, bottom 0.3s, top 0.3s !important;
+}
 
+/* Zen Mode active states */
+.ui-hidden .hud-top-left,
+.ui-hidden .chat-sidebar,
+.ui-hidden .hud-bottom,
+.ui-hidden .emoji-quick-reactions,
+.ui-hidden .action-tip-banner,
+.ui-hidden .cursor-layer,
+.ui-hidden .action-helper-tooltip,
+.ad-top-container.ui-hidden,
+.ad-left-container.ui-hidden,
+.ad-right-container.ui-hidden,
+.ad-mobile-top-container.ui-hidden,
+.ad-mobile-bottom-container.ui-hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Toast alert for Zen Mode */
+.zen-toast {
+  position: fixed;
+  bottom: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 14, 11, 0.85);
+  border: 1px solid var(--color-accent);
+  color: #fed7aa;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  z-index: 10000;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  transition: opacity 0.8s ease;
+  animation: zen-toast-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+  white-space: nowrap;
+}
+
+@keyframes zen-toast-in {
+  from { opacity: 0; transform: translate(-50%, 15px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@media (max-width: 600px) {
+  .zen-toast {
+    font-size: 0.75rem;
+    padding: 10px 18px;
+    width: 90%;
+    white-space: normal;
+    bottom: 90px;
+  }
+}
